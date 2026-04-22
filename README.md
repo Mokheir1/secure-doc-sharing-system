@@ -45,4 +45,3 @@ Access the application at: **https://127.0.0.1:5000**
 * `docs/`: Technical reports and security specifications.
 * `logs/`: Structured JSON security logs for forensic analysis.
 * `presentation/`: Final project slide deck.
-```
