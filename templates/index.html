@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Document Share</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔒 KHEIRTECH Secure Docs</h1>
+            <p>Enterprise-grade document encryption and sharing.</p>
+        </header>
+
+        <main>
+            <section class="card" id="login-section">
+                <h2>System Access</h2>
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <input type="text" id="username" placeholder="Username" required>
+                    <input type="password" id="password" placeholder="Password" required>
+                    <button type="submit">Authenticate</button>
+                </form>
+                <div id="loginMessage" class="message"></div>
+            </section>
+
+            <section class="card" id="upload-section" style="display: none;">
+                <h2>Secure Upload</h2>
+                <form id="uploadForm" onsubmit="handleUpload(event)">
+                    <input type="file" id="fileInput" required>
+                    <button type="submit">Encrypt & Upload</button>
+                </form>
+                <div id="uploadMessage" class="message"></div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // JavaScript to handle the API calls to your Flask backend
+        async function handleLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('username').value;
+            const p = document.getElementById('password').value;
+            
+            const res = await fetch('/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: u, password: p })
+            });
+            
+            const data = await res.json();
+            const msgBox = document.getElementById('loginMessage');
+            
+            if (res.ok) {
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('upload-section').style.display = 'block';
+            } else {
+                msgBox.innerText = data.error;
+                msgBox.className = 'message error';
+            }
+        }
+
+        async function handleUpload(e) {
+            e.preventDefault();
+            const fileInput = document.getElementById('fileInput');
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            const res = await fetch('/upload', { method: 'POST', body: formData });
+            const data = await res.json();
+            const msgBox = document.getElementById('uploadMessage');
+
+            msgBox.innerText = data.message || data.error;
+            msgBox.className = res.ok ? 'message success' : 'message error';
+        }
+    </script>
+</body>
+</html>
